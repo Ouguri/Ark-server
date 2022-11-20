@@ -1,0 +1,4 @@
+
+[submodule "src/libcommon"]
+	path = src/libcommon
+	url = https://github.com/Ouguri/libcommon.git
