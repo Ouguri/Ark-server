@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType } from '@nestjs/common';
+import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { initDoc } from './doc';
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { TransfromInterceptor } from './common/interceptor/transfrom.interceptor';
@@ -16,6 +16,8 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  app.useGlobalPipes(new ValidationPipe());
+
   // 全局前缀
   app.setGlobalPrefix('/api');
 
@@ -26,3 +28,4 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
+// http://localhost:3000/api/v1/

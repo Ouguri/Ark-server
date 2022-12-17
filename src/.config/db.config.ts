@@ -1,9 +1,9 @@
 export const MYSQLCONFIG:any = {
   type: 'mysql',
   username: 'root',
-  password: '123456',
+  password: '',
   host: 'localhost',
-  port: 3306,
+  port: 3307,
   database: 'ark',
   synchronize: true, // 是否自动将实体类同步到数据库
   retryDelay: 500,

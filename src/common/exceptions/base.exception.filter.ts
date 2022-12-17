@@ -16,11 +16,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const status = exception.getStatus();
+    const message = exception.getResponse();
 
     response.status(status).send({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      message_validator: message['message'],
       message: exception.message,
     });
   }

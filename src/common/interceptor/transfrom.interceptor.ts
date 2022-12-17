@@ -5,6 +5,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
+import { instanceToPlain } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -19,10 +20,10 @@ export class TransfromInterceptor<T>
   intercept(
     context: ExecutionContext,
     next: CallHandler<T>,
-  ): Observable<Response<T>> | Promise<Observable<Response<T>>> {
+  ): Observable<Response<any>> {
     return next.handle().pipe(
       map((data) => ({
-        data,
+        data: instanceToPlain(data),
         status: 0,
         extra: {},
         message: 'success',
@@ -31,3 +32,5 @@ export class TransfromInterceptor<T>
     );
   }
 }
+
+// Observable<Response<T>> | Promise<Observable<Response<T>>>
