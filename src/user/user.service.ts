@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ConflictException,
   InternalServerErrorException,

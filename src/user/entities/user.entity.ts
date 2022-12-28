@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Article } from 'src/articles/entities/article.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -13,4 +14,7 @@ export class User {
 
   @Column()
   level: number;
+
+  @OneToMany((_type) => Article, (article) => article.user, { eager: true })
+  articles: Article[];
 }

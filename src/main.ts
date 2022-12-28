@@ -4,6 +4,7 @@ import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { initDoc } from './doc';
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { TransfromInterceptor } from './common/interceptor/transfrom.interceptor';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,8 @@ async function bootstrap() {
     defaultVersion: '1',
     type: VersioningType.URI,
   });
+
+  app.use(cors());
 
   app.useGlobalPipes(new ValidationPipe());
 

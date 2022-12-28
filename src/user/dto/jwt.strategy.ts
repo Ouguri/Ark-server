@@ -7,7 +7,7 @@ import { User } from '../entities/user.entity';
 import { JwtPayload } from './jwt-payload.interface';
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 
-// jwt 策略，是可注入的类
+// jwt 策略，可注入
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
