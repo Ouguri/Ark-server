@@ -5,5 +5,5 @@ export class CreateArticleDto {
 
   content: string;
 
-  topic: string[];
+  topic: string;
 }

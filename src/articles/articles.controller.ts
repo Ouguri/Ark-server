@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common/decorators';
+import { Param, UseGuards } from '@nestjs/common/decorators';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
+import { GetUser } from 'src/user/get-user.decorator';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -12,18 +14,21 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
-  async createArticle(@Body() createArticleDto: CreateArticleDto) {
-    return this.articlesService.create(createArticleDto);
+  async createArticle(
+    @Body() createArticleDto: CreateArticleDto,
+    @GetUser() user: User,
+  ): Promise<Article> {
+    return await this.articlesService.create(createArticleDto, user);
   }
 
   @Get(':id')
-  findOne(@Body() articleId: string): Promise<Article> {
+  getArticle(@Param('id') articleId: string): Promise<Article> {
     return this.articlesService.findOne(articleId);
   }
 
-  @Patch(':id')
+  @Patch('/:id/title')
   update(
-    @Body() articleId: string,
+    @Param('id') articleId: string,
     @Body() updateArticleDto: UpdateArticleDto,
   ): Promise<Article> {
     return this.articlesService.update(articleId, updateArticleDto);

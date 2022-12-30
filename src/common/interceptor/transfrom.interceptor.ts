@@ -24,7 +24,7 @@ export class TransfromInterceptor<T>
     return next.handle().pipe(
       map((data) => ({
         data: instanceToPlain(data),
-        status: 0,
+        status: 200,
         extra: {},
         message: 'success',
         success: true,
