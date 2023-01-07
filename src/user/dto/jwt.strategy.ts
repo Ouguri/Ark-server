@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { JwtPayload } from './jwt-payload.interface';
 import { UnauthorizedException } from '@nestjs/common/exceptions';
+import { REJISTEROPTION } from '../../.config/secret.config';
 
 // jwt 策略，可注入
 @Injectable()
@@ -16,12 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     // 需要提供 secret
     super({
-      secretOrKey: 'topSecret11',
+      secretOrKey: REJISTEROPTION.secret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 把 token 放进头，作为不记名的令牌 bearer
     });
   }
 
-  // 在知道令牌有用之后要干什么
+  // 令牌有用/通过后，返回 user 信息
   async validate(payload: JwtPayload): Promise<User> {
     const { username } = payload;
     const user: User = await this.user.findOneBy({ username });

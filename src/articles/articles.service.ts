@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { SearchArticleDto } from './dto/search-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
 
@@ -33,15 +34,33 @@ export class ArticlesService {
     return newArticle;
   }
 
-  async findOne(articleID: string): Promise<Article> {
-    const found = await this.article.findOneBy({
-      id: articleID,
-    });
+  async findOne(id: string): Promise<Article> {
+    if (id) {
+      const found = await this.article.findOneBy({ id });
 
-    if (found) return found;
-    else {
-      throw new NotFoundException(`找不到该文章`);
+      if (found) return found;
+      else throw new NotFoundException(`找不到该文章`);
+    } else throw new NotFoundException(`必须携带id！`);
+  }
+
+  async findAllArticle(searchDto: SearchArticleDto): Promise<Article[]> {
+    const { content, topic } = searchDto;
+
+    const query = this.article.createQueryBuilder('Article'); // 填入实体名字
+
+    if (content) {
+      query.andWhere(
+        'Article.title LIKE :content OR Article.content LIKE :content',
+        { content: `%${content}%` },
+      );
     }
+
+    if (topic) {
+      query.andWhere('Article.topic = :topic', { topic });
+    }
+
+    const articles = await query.getMany();
+    return articles;
   }
 
   async update(

@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -20,17 +19,13 @@ export class UserController {
     return this.userService.signIn(createUserDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') user: User): Promise<User> {
-    const { id } = user;
-
-    return this.userService.findid(id);
+  @Get('/:username')
+  findOne(@Param('username') username: string): Promise<User> {
+    return this.userService.findid(username);
   }
 
-  @Delete(':username')
+  @Delete('/:username')
   remove(@Param('username') username: string) {
-    // const { username } = user;
-
     return this.userService.delete(username);
   }
 }

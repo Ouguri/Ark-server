@@ -59,8 +59,8 @@ export class UserService {
     }
   }
 
-  async findid(id): Promise<User> {
-    const found = await this.user.findOne(id);
+  async findid(username: string): Promise<User> {
+    const found = await this.user.findOneBy({ username });
 
     if (found) return found;
     else {
