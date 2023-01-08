@@ -1,6 +1,12 @@
 import { Exclude } from 'class-transformer';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Article {
@@ -26,6 +32,6 @@ export class Article {
   commentData: number;
 
   @ManyToOne((_type) => User, (user) => user.articles, { eager: false })
-  @Exclude({ toPlainOnly: true }) // 隐藏用户信息不返回
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

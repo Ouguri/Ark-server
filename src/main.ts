@@ -2,12 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType, ValidationPipe } from '@nestjs/common';
 import { initDoc } from './doc';
+import { NestExpressApplication } from '@nestjs/platform-express/interfaces'; // 静态资源类型支持
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { TransfromInterceptor } from './common/interceptor/transfrom.interceptor';
 import * as cors from 'cors';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useStaticAssets(join(__dirname, 'images'), {
+    prefix: '/avatar',
+  });
+  // http://localhost:3000/avatar/1673187306359.jpg (访问静态资源图片的路径，/avatar 是自定义路径)
 
   // 初始化 doc
   initDoc(app);

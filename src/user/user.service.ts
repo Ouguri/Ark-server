@@ -4,7 +4,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ConflictException,
   InternalServerErrorException,
@@ -65,6 +64,20 @@ export class UserService {
     if (found) return found;
     else {
       throw new NotFoundException(`找不到该用户`);
+    }
+  }
+
+  async update() {
+    return;
+  }
+
+  async saveAvatar(avatar: string, username: string): Promise<string> {
+    const found = await this.findid(username);
+
+    if (found) {
+      found.avatar = avatar;
+      await this.user.save(found);
+      return '保存成功';
     }
   }
 

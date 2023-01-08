@@ -23,26 +23,29 @@ export class ArticlesController {
   }
 
   @Get('getone')
-  getOneArticle(@Query('id') id: string): Promise<Article> {
-    return this.articlesService.findOne(id);
+  getOneArticle(
+    @Query('id') id: string,
+    @GetUser() user: User,
+  ): Promise<Article> {
+    return this.articlesService.findOne(id, user);
   }
 
   @Get('search')
   getArticles(@Query() searchDto: SearchArticleDto): Promise<Article[]> {
-    console.log(searchDto);
     return this.articlesService.findAllArticle(searchDto);
   }
 
   @Patch()
   update(
-    @Query('id') articleId: string,
+    @Query('id') id: string,
     @Body() updateArticleDto: UpdateArticleDto,
+    @GetUser() user: User,
   ): Promise<Article> {
-    return this.articlesService.update(articleId, updateArticleDto);
+    return this.articlesService.update(id, updateArticleDto, user);
   }
 
   @Delete(':id')
-  remove(@Body() articleId: string): Promise<void> {
-    return this.articlesService.remove(articleId);
+  remove(@Body() id: string, @GetUser() user: User): Promise<void> {
+    return this.articlesService.remove(id, user);
   }
 }
