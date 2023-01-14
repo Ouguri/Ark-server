@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common/exceptions';
 import { JwtService } from '@nestjs/jwt/dist';
 import { JwtPayload } from './dto/jwt-payload.interface';
+// const moment = require('moment');
+import * as moment from 'moment';
 
 @Injectable()
 export class UserService {
@@ -20,7 +22,14 @@ export class UserService {
     private jwtService: JwtService, // 注入 jwt 服务
   ) {}
   async signUp(createUserDto: CreateUserDto): Promise<void> {
-    const { username, password, level = 1 } = createUserDto;
+    const {
+      username,
+      password,
+      level = 1,
+      superAdmin,
+      avatar = 'empty',
+      createDate = moment().format('YYYY-MM-DD HH:mm:ss'),
+    } = createUserDto;
 
     // hash
     const salt = await bcrypt.genSalt(); // 生成哈希？
@@ -30,8 +39,10 @@ export class UserService {
       username,
       password: hashedPassword,
       level,
+      superAdmin,
+      avatar,
+      createDate,
     });
-
     try {
       await this.user.save(user);
     } catch (error) {
@@ -43,7 +54,9 @@ export class UserService {
     }
   }
 
-  async signIn(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
+  async signIn(
+    createUserDto: CreateUserDto,
+  ): Promise<{ accessToken: string; user: User }> {
     const { username, password } = createUserDto;
     const user = await this.user.findOneBy({ username });
 
@@ -51,6 +64,7 @@ export class UserService {
       const payload: JwtPayload = { username }; // 制成有效载荷，需要用作签署 token
       const accessToken: string = await this.jwtService.sign(payload); // 签署一个 token
       return {
+        user,
         accessToken,
       };
     } else {
@@ -58,7 +72,7 @@ export class UserService {
     }
   }
 
-  async findid(username: string): Promise<User> {
+  async findByUsername(username: string): Promise<User> {
     const found = await this.user.findOneBy({ username });
 
     if (found) return found;
@@ -72,12 +86,12 @@ export class UserService {
   }
 
   async saveAvatar(avatar: string, username: string): Promise<string> {
-    const found = await this.findid(username);
+    const found = await this.findByUsername(username);
 
     if (found) {
       found.avatar = avatar;
       await this.user.save(found);
-      return '保存成功';
+      return 'success';
     }
   }
 

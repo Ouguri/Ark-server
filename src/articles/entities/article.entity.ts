@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -16,11 +15,14 @@ export class Article {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ type: 'text' })
   content: string;
 
   @Column()
   goods: number;
+
+  @Column()
+  date: Date;
 
   @Column()
   watchData: number;

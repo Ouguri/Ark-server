@@ -14,5 +14,14 @@ export class CreateUserDto {
   })
   password: string;
 
+  // 0 普通 1 超级管理员
+  superAdmin?: number;
+
+  avatar?: string;
+
   level: number;
+
+  createDate: Date;
+
+  exp: number;
 }

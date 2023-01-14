@@ -6,4 +6,12 @@ export class CreateArticleDto {
   content: string;
 
   topic: string;
+
+  goods: number;
+
+  watchData: number;
+
+  commentData: number;
+
+  date: Date;
 }

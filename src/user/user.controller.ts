@@ -2,9 +2,14 @@ import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
+import {
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common/decorators';
 // FileInterceptor：上传单个文件；FilesInterceptor：上传多个文件
 import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
@@ -18,7 +23,7 @@ export class UserController {
   @Post('signin')
   signIn(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; user: User }> {
     return this.userService.signIn(createUserDto);
   }
 
@@ -26,20 +31,22 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file')) // 处理文件的中间件
   async uploadAvatar(
     @UploadedFile() file,
-    @Param() username: string,
+    @Param('username') username: string,
   ): Promise<string> {
     const res = await this.userService.saveAvatar(file.filename, username);
 
-    if (res == '保存成功') return file.filename;
+    if (res == 'success') return '保存成功';
     return '保存失败，请稍后重试！';
   }
 
   @Get('/:username')
+  // @UseGuards(AuthGuard())
   findOne(@Param('username') username: string): Promise<User> {
-    return this.userService.findid(username);
+    return this.userService.findByUsername(username);
   }
 
   @Delete('/:username')
+  @UseGuards(AuthGuard())
   remove(@Param('username') username: string) {
     return this.userService.delete(username);
   }
