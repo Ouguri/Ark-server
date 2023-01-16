@@ -11,9 +11,6 @@ export class Comment {
   topic_type: string;
 
   @Column()
-  title: string;
-
-  @Column()
   content: string;
 
   @Column()
@@ -22,7 +19,7 @@ export class Comment {
   @Column()
   date: Date;
 
-  @Column()
+  @Column({ default: 'empty' })
   to_uid: string;
 
   @ManyToOne((_type) => User, (user) => user.comments, { eager: false })
