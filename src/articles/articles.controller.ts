@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
-import { Query, UseGuards } from '@nestjs/common/decorators';
+import { Param, Query, UseGuards } from '@nestjs/common/decorators';
 import { AuthGuard } from '@nestjs/passport';
+import { query } from 'express';
 import { User } from 'src/user/entities/user.entity';
 import { GetUser } from 'src/user/get-user.decorator';
 import { ArticlesService } from './articles.service';
@@ -28,7 +29,9 @@ export class ArticlesController {
   }
 
   @Get('search')
-  getArticles(@Query() searchDto: SearchArticleDto): Promise<Article[]> {
+  getArticles(
+    @Query() searchDto: SearchArticleDto,
+  ): Promise<[Article[], number]> {
     return this.articlesService.findAllArticle(searchDto);
   }
 
@@ -43,7 +46,7 @@ export class ArticlesController {
 
   @Delete(':id')
   @UseGuards(AuthGuard())
-  remove(@Body() id: string, @GetUser() user: User): Promise<void> {
-    return this.articlesService.remove(id, user);
+  remove(@Param() articleID: any, @GetUser() user: User): Promise<void> {
+    return this.articlesService.remove(articleID.id, user);
   }
 }

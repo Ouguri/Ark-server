@@ -4,4 +4,8 @@ export class SearchArticleDto {
   content?: string;
 
   topic?: string;
+
+  take: number;
+
+  skip: number;
 }

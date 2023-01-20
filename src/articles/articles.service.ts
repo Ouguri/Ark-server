@@ -57,12 +57,16 @@ export class ArticlesService {
   }
 
   // 搜索文章
-  async findAllArticle(searchDto: SearchArticleDto): Promise<Article[]> {
-    const { content, topic } = searchDto;
+  async findAllArticle(
+    searchDto: SearchArticleDto,
+  ): Promise<[Article[], number]> {
+    const { content, topic, take, skip } = searchDto;
 
     const query = await this.article.createQueryBuilder('Article'); // 填入实体名字
 
     query.leftJoinAndSelect('Article.user', 'user');
+    query.take(take);
+    query.skip(take * (skip - 1));
     if (content) {
       query.andWhere(
         'Article.title LIKE :content OR Article.content LIKE :content',
@@ -73,7 +77,7 @@ export class ArticlesService {
     if (topic) {
       query.andWhere('Article.topic = :topic', { topic });
     }
-    const articles = await query.getMany();
+    const articles = await query.getManyAndCount();
     return articles;
   }
 
