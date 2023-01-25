@@ -91,7 +91,9 @@ export class UserService {
     if (found) {
       found.avatar = avatar;
       await this.user.save(found);
-      return 'success';
+      return found.avatar;
+    } else {
+      return `上传失败`;
     }
   }
 

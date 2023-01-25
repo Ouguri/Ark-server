@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
 import { Param, Query, UseGuards } from '@nestjs/common/decorators';
 import { AuthGuard } from '@nestjs/passport';
-import { query } from 'express';
 import { User } from 'src/user/entities/user.entity';
 import { GetUser } from 'src/user/get-user.decorator';
 import { ArticlesService } from './articles.service';
@@ -48,5 +47,14 @@ export class ArticlesController {
   @UseGuards(AuthGuard())
   remove(@Param() articleID: any, @GetUser() user: User): Promise<void> {
     return this.articlesService.remove(articleID.id, user);
+  }
+
+  @Get('personsearch')
+  @UseGuards(AuthGuard())
+  getArticlesTest(
+    @Query() searchDto: SearchArticleDto,
+    @GetUser() user: User,
+  ): Promise<[Article[], number]> {
+    return this.articlesService.getArticlesByPersonal(searchDto, user);
   }
 }

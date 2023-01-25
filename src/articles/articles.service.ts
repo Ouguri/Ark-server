@@ -64,9 +64,10 @@ export class ArticlesService {
 
     const query = await this.article.createQueryBuilder('Article'); // 填入实体名字
 
-    query.leftJoinAndSelect('Article.user', 'user');
-    query.take(take);
-    query.skip(take * (skip - 1));
+    query
+      .leftJoinAndSelect('Article.user', 'user')
+      .take(take)
+      .skip(take * (skip - 1));
     if (content) {
       query.andWhere(
         'Article.title LIKE :content OR Article.content LIKE :content',
@@ -91,12 +92,18 @@ export class ArticlesService {
     if (foundArticle) {
       const { title, content, topic, goods, watchData, commentData } =
         updateArticleDto;
+
+      // if (commentData === 1 || commentData < 0)
+      foundArticle.commentData += commentData;
+
+      if (goods === 1) foundArticle.goods += goods;
+
+      if (watchData === 1) foundArticle.watchData += watchData;
+
+      if (topic) foundArticle.topic = topic;
+
       foundArticle.title = title;
       foundArticle.content = content;
-      foundArticle.topic = topic;
-      foundArticle.goods = goods;
-      foundArticle.watchData = watchData;
-      foundArticle.commentData = commentData;
       await this.article.save(foundArticle);
       return foundArticle;
     }
@@ -107,5 +114,32 @@ export class ArticlesService {
   async remove(id: string, user: User): Promise<void> {
     await this.article.delete({ id, user });
     return;
+  }
+
+  async getArticlesByPersonal(
+    searchDto: SearchArticleDto,
+    user: User,
+  ): Promise<[Article[], number]> {
+    const { content, topic, take, skip } = searchDto;
+
+    const query = await this.article.createQueryBuilder('Article');
+
+    query
+      .leftJoinAndSelect('Article.user', 'user')
+      .take(take)
+      .skip(take * (skip - 1))
+      .where({ user });
+    if (content) {
+      query.andWhere(
+        'Article.title LIKE :content OR Article.content LIKE :content',
+        { content: `%${content}%` },
+      );
+    }
+
+    if (topic) {
+      query.andWhere('Article.topic = :topic', { topic });
+    }
+    const articles = await query.getManyAndCount();
+    return articles;
   }
 }

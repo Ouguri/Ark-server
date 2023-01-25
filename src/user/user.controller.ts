@@ -29,14 +29,12 @@ export class UserController {
 
   @Post('avatar/:username')
   @UseInterceptors(FileInterceptor('file')) // 处理文件的中间件
+  // @UseGuards(AuthGuard())
   async uploadAvatar(
     @UploadedFile() file,
     @Param('username') username: string,
   ): Promise<string> {
-    const res = await this.userService.saveAvatar(file.filename, username);
-
-    if (res == 'success') return '保存成功';
-    return '保存失败，请稍后重试！';
+    return this.userService.saveAvatar(file.filename, username);
   }
 
   @Get('/:username')

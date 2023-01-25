@@ -8,7 +8,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreateCommentDto, DeleteDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { GetUser } from 'src/user/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -32,8 +32,9 @@ export class CommentController {
     return this.commentService.getCommentList(articleID);
   }
 
-  @Delete(':id')
-  deleteComment(): Promise<void> {
-    return this.commentService.deleteComment(1);
+  @Delete()
+  @UseGuards(AuthGuard())
+  deleteComment(@Body() deleteDto: DeleteDto): Promise<void> {
+    return this.commentService.deleteComment(deleteDto);
   }
 }

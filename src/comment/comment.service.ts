@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateCommentDto } from './dto/create-comment.dto';
+import { CreateCommentDto, DeleteDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
 import * as moment from 'moment';
 import { User } from 'src/user/entities/user.entity';
+import { ArticlesService } from 'src/articles/articles.service';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment) private readonly comment: Repository<Comment>,
+    private ArticlesService: ArticlesService,
   ) {}
   async addComment(
     createCommentDto: CreateCommentDto,
@@ -34,6 +36,8 @@ export class CommentService {
 
     await this.comment.save(aComment);
 
+    await this.ArticlesService.update(articleID, { commentData: 1 });
+
     return aComment;
   }
 
@@ -50,8 +54,19 @@ export class CommentService {
     return commentList;
   }
 
-  async deleteComment(id: number): Promise<void> {
-    await this.comment.delete(id);
+  async deleteComment(deleteDto: DeleteDto): Promise<void> {
+    const { id, articleID } = deleteDto;
+    if (!Array.isArray(id)) {
+      await this.comment.delete(id);
+      await this.ArticlesService.update(articleID, { commentData: -1 });
+    } else {
+      id.forEach(async (el) => {
+        await this.comment.delete(el);
+      });
+      await this.ArticlesService.update(articleID, {
+        commentData: -id.length,
+      });
+    }
     return;
   }
 }

@@ -9,3 +9,8 @@ export class CreateCommentDto {
 
   date: Date;
 }
+
+export class DeleteDto {
+  articleID: string;
+  id: string & string[];
+}
