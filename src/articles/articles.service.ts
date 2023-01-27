@@ -93,8 +93,7 @@ export class ArticlesService {
       const { title, content, topic, goods, watchData, commentData } =
         updateArticleDto;
 
-      // if (commentData === 1 || commentData < 0)
-      foundArticle.commentData += commentData;
+      if (commentData) foundArticle.commentData += commentData;
 
       if (goods === 1) foundArticle.goods += goods;
 
@@ -105,6 +104,7 @@ export class ArticlesService {
       foundArticle.title = title;
       foundArticle.content = content;
       await this.article.save(foundArticle);
+
       return foundArticle;
     }
     return;

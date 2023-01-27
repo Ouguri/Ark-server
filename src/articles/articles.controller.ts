@@ -1,5 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Delete } from '@nestjs/common';
-import { Param, Query, UseGuards } from '@nestjs/common/decorators';
+import {
+  Param,
+  Query,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common/decorators';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/user/entities/user.entity';
 import { GetUser } from 'src/user/get-user.decorator';
@@ -56,5 +63,12 @@ export class ArticlesController {
     @GetUser() user: User,
   ): Promise<[Article[], number]> {
     return this.articlesService.getArticlesByPersonal(searchDto, user);
+  }
+
+  @Post('articleimgs')
+  @UseInterceptors(FileInterceptor('file')) // 处理文件的中间件
+  @UseGuards(AuthGuard())
+  async uploadAvatar(@UploadedFile() file): Promise<string> {
+    return file.filename;
   }
 }

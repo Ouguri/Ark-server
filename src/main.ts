@@ -15,6 +15,10 @@ async function bootstrap() {
   });
   // http://localhost:3000/avatar/1673187306359.jpg (访问静态资源图片的路径，/avatar 是自定义路径)
 
+  app.useStaticAssets(join(__dirname, 'images/articles'), {
+    prefix: '/articleimg',
+  });
+
   // 初始化 doc
   initDoc(app);
   // 版本控制
