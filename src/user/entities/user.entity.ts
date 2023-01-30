@@ -2,6 +2,7 @@ import { Article } from 'src/articles/entities/article.entity';
 import { Exclude } from 'class-transformer';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Comment } from 'src/comment/entities/comment.entity';
+import { Follows } from './follows.entity';
 
 @Entity()
 export class User {
@@ -20,6 +21,9 @@ export class User {
 
   @Column()
   createDate: Date;
+
+  @Column({ default: '0' })
+  followers: number;
 
   @Column({ default: 'normal' })
   vip: string;
@@ -41,4 +45,7 @@ export class User {
 
   @OneToMany((_type) => Comment, (comments) => comments.user, { eager: true })
   comments: Comment[];
+
+  @OneToMany((_type) => Follows, (follows) => follows.user, { eager: true })
+  follows: Follows[];
 }

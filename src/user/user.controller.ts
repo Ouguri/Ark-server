@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -10,6 +19,8 @@ import {
 // FileInterceptor：上传单个文件；FilesInterceptor：上传多个文件
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { GetUser } from './get-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -37,8 +48,14 @@ export class UserController {
     return this.userService.saveAvatar(file.filename, username);
   }
 
+  // 更新信息
+  @Patch()
+  @UseGuards(AuthGuard())
+  update(@Body() updateUserDto: UpdateUserDto, @GetUser() user: User) {
+    return this.userService.update(updateUserDto, user);
+  }
+
   @Get('/:username')
-  // @UseGuards(AuthGuard())
   findOne(@Param('username') username: string): Promise<User> {
     return this.userService.findByUsername(username);
   }

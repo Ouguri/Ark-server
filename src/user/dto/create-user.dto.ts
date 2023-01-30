@@ -24,4 +24,6 @@ export class CreateUserDto {
   createDate: Date;
 
   exp: number;
+
+  followers?: number;
 }

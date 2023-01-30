@@ -10,6 +10,7 @@ import { JwtStrategy } from './dto/jwt.strategy';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { Follows } from './entities/follows.entity';
 
 // extname 可以截取文件原始名称（.jpg，.png）
 
@@ -27,7 +28,7 @@ import { extname, join } from 'path';
         },
       }),
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Follows]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register(REJISTEROPTION),
   ],

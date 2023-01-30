@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -14,11 +15,13 @@ import { JwtService } from '@nestjs/jwt/dist';
 import { JwtPayload } from './dto/jwt-payload.interface';
 // const moment = require('moment');
 import * as moment from 'moment';
+import { Follows } from './entities/follows.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>, // @InjectRepository(UserRepository) // private UserRespository: UserRepository,
+    @InjectRepository(Follows) private readonly follows: Repository<Follows>,
     private jwtService: JwtService, // 注入 jwt 服务
   ) {}
   async signUp(createUserDto: CreateUserDto): Promise<void> {
@@ -81,8 +84,28 @@ export class UserService {
     }
   }
 
-  async update() {
-    return;
+  async update(updateUserDto: UpdateUserDto, user: User): Promise<User> {
+    const { followers, username } = updateUserDto;
+    const beFollowed = await this.findByUsername(username);
+
+    if (beFollowed) {
+      if (followers === 1) {
+        beFollowed.followers += followers;
+        const newFollows = await this.follows.create({ username, user });
+        await this.follows.save(newFollows);
+        await this.user.save(beFollowed);
+
+        return await this.findByUsername(user.username);
+      }
+
+      if (followers === -1) {
+        beFollowed.followers += followers;
+        await this.follows.delete({ username, user });
+        await this.user.save(beFollowed);
+
+        return await this.findByUsername(user.username);
+      }
+    }
   }
 
   async saveAvatar(avatar: string, username: string): Promise<string> {
@@ -105,3 +128,18 @@ export class UserService {
     }
   }
 }
+
+// if (found) {
+//   if (password) {
+//     const pass = await bcrypt.compare(password, found.password);
+//     if (pass) {
+//       const salt = bcrypt.genSalt();
+//       const hashedPassword = await bcrypt.hash(newPassword, salt);
+//       found.password = hashedPassword;
+//     } else {
+//       throw new UnauthorizedException(`原密码错误！`);
+//     }
+//   }
+
+//   await this.user.save(found);
+// }
