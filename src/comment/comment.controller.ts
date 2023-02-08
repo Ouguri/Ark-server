@@ -27,6 +27,15 @@ export class CommentController {
     return this.commentService.addComment(createCommentDto, user);
   }
 
+  @Post('update')
+  @UseGuards(AuthGuard())
+  replyAndGood(
+    @Body() createCommentDto: CreateCommentDto,
+    @GetUser() user: User,
+  ): Promise<Comment> {
+    return this.commentService.replyAndGood(createCommentDto, user);
+  }
+
   @Get()
   getCommentList(@Query('articleID') articleID: string) {
     return this.commentService.getCommentList(articleID);

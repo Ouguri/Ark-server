@@ -84,14 +84,18 @@ export class UserService {
     }
   }
 
-  async update(updateUserDto: UpdateUserDto, user: User): Promise<User> {
-    const { followers, username } = updateUserDto;
+  async updateFollow(updateUserDto: UpdateUserDto, user: User): Promise<User> {
+    const { followers, avatar, username } = updateUserDto;
     const beFollowed = await this.findByUsername(username);
 
     if (beFollowed) {
       if (followers === 1) {
         beFollowed.followers += followers;
-        const newFollows = await this.follows.create({ username, user });
+        const newFollows = await this.follows.create({
+          username,
+          avatar,
+          user,
+        });
         await this.follows.save(newFollows);
         await this.user.save(beFollowed);
 
@@ -118,6 +122,30 @@ export class UserService {
     } else {
       return `上传失败`;
     }
+  }
+
+  async getFollowList(
+    searchDto: { content: string; take; skip },
+    user: User,
+  ): Promise<[Follows[], number]> {
+    const { content, take, skip } = searchDto;
+    const query = await this.follows.createQueryBuilder('Follows');
+
+    query
+      .leftJoinAndSelect('Follows.user', 'user')
+      .take(take)
+      .skip(take * (skip - 1))
+      .where({ user });
+
+    if (content) {
+      query.andWhere('Follows.username LIKE :content', {
+        content: `%${content}%`,
+      });
+    }
+
+    const followList = await query.getManyAndCount();
+
+    return followList;
   }
 
   async delete(username: string): Promise<void> {

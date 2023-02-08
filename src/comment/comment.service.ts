@@ -21,8 +21,9 @@ export class CommentService {
       content,
       topic_type,
       articleID,
+      to_uid,
+      to_username,
       date = moment().format('YYYY-MM-DD HH:mm:ss'),
-      to_uid = 'empty',
     } = createCommentDto;
 
     const aComment = this.comment.create({
@@ -31,6 +32,7 @@ export class CommentService {
       articleID,
       date,
       to_uid,
+      to_username,
       user,
     });
 
@@ -52,6 +54,22 @@ export class CommentService {
 
     const commentList = await query.getMany();
     return commentList;
+  }
+
+  async replyAndGood(
+    createCommentDto: CreateCommentDto,
+    user: User,
+  ): Promise<any> {
+    const found = await this.comment.findOneBy({ id: createCommentDto.id });
+    if (createCommentDto.to_uid) {
+      await this.addComment(createCommentDto, user);
+      found.reply += 1;
+      await this.comment.save(found);
+    }
+    if (createCommentDto.goods) {
+      found.goods += 1;
+      await this.comment.save(found);
+    }
   }
 
   async deleteComment(deleteDto: DeleteDto): Promise<void> {

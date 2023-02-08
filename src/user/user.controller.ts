@@ -21,6 +21,7 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUser } from './get-user.decorator';
+import { Follows } from './entities/follows.entity';
 
 @Controller('user')
 export class UserController {
@@ -38,6 +39,16 @@ export class UserController {
     return this.userService.signIn(createUserDto);
   }
 
+  @Post('follow')
+  @UseGuards(AuthGuard())
+  followList(
+    @Body() searchDto: { content: string; take: number; skip: number },
+    @GetUser()
+    user: User,
+  ): Promise<[Follows[], number]> {
+    return this.userService.getFollowList(searchDto, user);
+  }
+
   @Post('avatar/:username')
   @UseInterceptors(FileInterceptor('file')) // 处理文件的中间件
   // @UseGuards(AuthGuard())
@@ -51,8 +62,8 @@ export class UserController {
   // 更新信息
   @Patch()
   @UseGuards(AuthGuard())
-  update(@Body() updateUserDto: UpdateUserDto, @GetUser() user: User) {
-    return this.userService.update(updateUserDto, user);
+  updateFollow(@Body() updateUserDto: UpdateUserDto, @GetUser() user: User) {
+    return this.userService.updateFollow(updateUserDto, user);
   }
 
   @Get('/:username')

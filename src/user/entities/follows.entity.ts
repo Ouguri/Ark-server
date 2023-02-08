@@ -15,6 +15,9 @@ export class Follows {
   @Column()
   username: string;
 
+  @Column()
+  avatar: string;
+
   @CreateDateColumn()
   date: Date;
 

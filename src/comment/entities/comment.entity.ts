@@ -19,8 +19,17 @@ export class Comment {
   @Column()
   date: Date;
 
-  @Column({ default: 'empty' })
+  @Column({ default: 0 })
+  goods: number;
+
+  @Column({ default: 0 })
+  reply: number;
+
+  @Column({ nullable: true })
   to_uid: string;
+
+  @Column({ nullable: true })
+  to_username: string;
 
   @ManyToOne((_type) => User, (user) => user.comments, { eager: false })
   user: User;
